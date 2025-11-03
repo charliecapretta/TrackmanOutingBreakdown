@@ -2,7 +2,8 @@
 
 This Python script analyzes and visualizes a pitcher’s outing using TrackMan data. It filters game data for a specific pitcher and creates detailed breakdowns of pitch movement, release point, and location, all in one figure.
 
-Features
+
+**Features**
 
 Filters TrackMan CSV data for a selected pitcher
 
@@ -14,7 +15,8 @@ Color-codes pitches by type for quick comparison
 
 Automatically adds game title and opponent info
 
-Requirements
+
+**Requirements**
 
 Python 3.x
 
@@ -22,7 +24,8 @@ pandas
 
 matplotlib
 
-Usage
+
+**Usage**
 
 Update pitcherName and CSV file path in the script.
 
