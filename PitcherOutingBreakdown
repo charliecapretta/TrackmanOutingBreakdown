@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
 #Set the pitcher name and load csv
-pitcherName = 'Prior, Keaton'
-data = pd.read_csv('/Users/charliecapretta/Downloads/Scrimmage Vs Middle GA 10-24.csv')
+pitcherName = 'Johnson, David'
+data = pd.read_csv('TrackmanData.csv')
 
 
 #get data for pitcher and drop rows with missing values
