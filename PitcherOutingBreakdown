@@ -3,13 +3,27 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
 #Set the pitcher name and load csv
-pitcherName = 'Johnson, David'
-data = pd.read_csv('/Users/name/Trackman.csv')
+pitcherName = 'Prior, Keaton'
+data = pd.read_csv('/Users/charliecapretta/Downloads/Scrimmage Vs Middle GA 10-24.csv')
 
 
 #get data for pitcher and drop rows with missing values
 df = data[data['Pitcher'] == pitcherName]
 dfPlotted = df.dropna(subset=['HorzBreak', 'InducedVertBreak', 'RelSide', 'RelHeight', 'PlateLocSide', 'PlateLocHeight'])
+
+#Set up funtions for additional stats
+def getWhiffPerc(dataframe):
+    #count the number of swings
+    totalSwings = len(dataframe[dataframe['PitchCall'].isin(['StrikeSwinging', 'InPlay', 'FoulBallNotFieldable', 'FoulBallFieldable'])])
+    #count the number of whiff pitches
+    whiff_pitches = len(dataframe[dataframe['PitchCall'] == 'StrikeSwinging'])
+    #calculate the whiff percentage
+    whiff_percentage = (whiff_pitches / totalSwings) * 100 if totalSwings > 0 else 0
+    return whiff_percentage
+
+def getZonePerc(dataframe):
+    inZone = (dataframe['PlateLocHeight'].between(1.5, 3.5)) & (dataframe['PlateLocSide'].between(-0.71, 0.71))
+    return (inZone.sum() / len(dataframe)) * 100
 
 # Create figure with subplots
 fig = plt.figure(figsize=(15, 10))
@@ -30,7 +44,7 @@ colors = {
         'Curveball': 'blue',
         'Changeup': 'green',
         'ChangeUp': 'green',
-        'Cutter': 'brown',
+        'Cutter': '#933F2C',
         'Sinker': 'orange',
         'Splitter': 'teal'
     }
@@ -100,7 +114,7 @@ plt.fill_between([sz_x_Min, sz_x_Max], sz_y_min, sz_y_max, color='skyblue', alph
 
 
 # TABLE: Pitch Statistics
-tableColumns = ['Pitch Name', 'Count', 'Velocity', 'IVB', 'HB', 'Spin', 'hRel', 'vRel', 'Ext']
+tableColumns = ['Pitch Name', 'Count', 'Velocity', 'IVB', 'HB', 'Spin', 'hRel', 'vRel', 'Ext', 'Whiff%', 'Zone%']
 pitchStats = []
 groupedStats = df.groupby('TaggedPitchType')
 
@@ -115,7 +129,9 @@ for pitchType, group in groupedStats:
         'Spin': round(group['SpinRate'].mean()),
         'hRel': round(group['RelSide'].mean(), 2),
         'vRel': round(group['RelHeight'].mean(), 2),
-        'Ext': round(group['Extension'].mean(), 2)
+        'Ext': round(group['Extension'].mean(), 2),
+        'Whiff%': round(getWhiffPerc(group), 1),
+        'Zone%': round(getZonePerc(group), 1)
     }
     pitchStats.append(stats)
 
@@ -129,6 +145,8 @@ if pitchStats:
     avgHRel = round(df['RelSide'].mean(), 2) if 'RelSide' in df.columns else '-'
     avgVRel = round(df['RelHeight'].mean(), 2) if 'RelHeight' in df.columns else '-'
     avgExt = round(df['Extension'].mean(), 2) if 'Extension' in df.columns else '-'
+    Whiff = round(getWhiffPerc(df), 1)
+    Zone = round(getZonePerc(df), 1)
 
     totalsRow = pd.DataFrame([{
         'Pitch Name': 'Total',
@@ -139,7 +157,9 @@ if pitchStats:
         'Spin': '-',
         'hRel': avgHRel,
         'vRel': avgVRel,
-        'Ext': avgExt
+        'Ext': avgExt,
+        'Whiff%': Whiff,
+        'Zone%': Zone
     }])
 
     resultDf = pd.concat([resultDf, totalsRow], ignore_index=True)
@@ -157,7 +177,7 @@ if pitchStats:
         colLabels=tableCols,
         cellLoc='center',
         loc='center',
-        colWidths = [0.08, 0.09, 0.08, 0.08, 0.09, 0.08, 0.08, 0.08]
+        colWidths = [0.08, 0.09, 0.08, 0.08, 0.09, 0.08, 0.08, 0.08, .08, 0.08, 0.08]
     )
 
     table.scale(1.2, 3)
@@ -181,6 +201,9 @@ if pitchStats:
         for j in range(len(tableCols)):
             table[(i + 1, j)].set_facecolor(lightColor)
             table[(i + 1, j)].set_text_props(color='black')
+
+fig.text(0.5, 0.02, "Source: TrackMan Data | Created by Charlie Capretta | All Plots from Umpire View",
+         ha='center', fontsize=10, color='gray')
 
 plt.subplots_adjust(top=0.88)
 plt.show()
