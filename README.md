@@ -37,5 +37,5 @@ python PitcherOutingBreakdownFinal.py
 The output figure shows multiple panels visualizing the outing.
 
 Example Output:
-<img width="1440" height="864" alt="UpdatedImage" src="https://github.com/user-attachments/assets/ecbc237e-6af6-43d9-86f7-415ef865816d" />
+<img width="1440" height="864" alt="ExampleForGithub" src="https://github.com/user-attachments/assets/3f445ae5-694d-4363-94dd-79ac3f658a0c" />
 
